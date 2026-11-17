@@ -1,5 +1,5 @@
 package: community.lazycat.app.freebie-radar
-version: 0.1.0
+version: 0.1.1
 name: 资源雷达
 description: "Resource Radar: 多兴趣社区信息聚合与精准推送工作台。100+ 源定时采集（GitHub/Reddit/限免站/RSS/Telegram），规则初筛 + AI 语义定级，分频道呈现，Telegram 多路由推送。"
 min_os_version: 1.5.0

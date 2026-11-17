@@ -3,3 +3,4 @@
 .lazycat-release.env
 .lazycat-version-state.json
 lzc-build-image-context.tar
+.lzc-cli-cache/
