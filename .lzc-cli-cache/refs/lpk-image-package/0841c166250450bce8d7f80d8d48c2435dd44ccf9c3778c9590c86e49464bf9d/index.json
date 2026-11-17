@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 2,
+  "manifests": [
+    {
+      "mediaType": "application/vnd.oci.image.manifest.v1+json",
+      "digest": "sha256:92cc4e458adb212753940da45c2c86bbd87bfb55510de18ac3dbfd2aa5579abf",
+      "size": 2128,
+      "annotations": {
+        "org.opencontainers.image.ref.name": "radar"
+      }
+    }
+  ]
+}

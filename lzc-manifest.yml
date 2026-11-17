@@ -11,7 +11,7 @@ services:
   radar:
     # 源码构建应用：上游未发布镜像，lzc-build.yml 用 Dockerfile 从上游源码构建并内嵌 LPK
     # 上游: https://github.com/ZiChuanLan/freebie-radar (MIT)
-    image: freebie-radar:local
+    image: embed:radar
     environment:
       - PORT=8788
       - HOST=0.0.0.0
