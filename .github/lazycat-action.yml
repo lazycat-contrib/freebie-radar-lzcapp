@@ -1,0 +1,27 @@
+version: 1
+
+project:
+  root: .
+  build_config: lzc-build.yml
+  package_file: package.yml
+  output: .lazycat-build/radar.lpk
+  target_arch: amd64
+
+update:
+  strategy: publish
+  version_source:
+    type: git
+
+build:
+  toolchains:
+    - kind: docker
+  run_buildscript: false
+
+stores:
+  private:
+    enabled: true
+    skip_if_version_exists: true
+    name: 资源雷达
+    summary: "资源雷达（Resource Radar）懒猫微服打包：多兴趣社区信息聚合与精准推送工作台，100+ 源采集 + AI 定级 + Telegram 推送（MIT）。"
+  official:
+    enabled: false

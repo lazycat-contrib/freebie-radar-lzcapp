@@ -1,0 +1,60 @@
+application:
+  subdomain: radar
+  multi_instance: false
+  public_path:
+    - /
+  upstreams:
+    - location: /
+      backend: http://radar:8788/
+
+services:
+  radar:
+    # 源码构建应用：上游未发布镜像，lzc-build.yml 用 Dockerfile 从上游源码构建并内嵌 LPK
+    # 上游: https://github.com/ZiChuanLan/freebie-radar (MIT)
+    image: freebie-radar:local
+    environment:
+      - PORT=8788
+      - HOST=0.0.0.0
+      - DATABASE_PATH=/data/radar.db
+      - TZ=Asia/Shanghai
+      # 管理区密码（平台稳定密钥，重新安装不变）；在应用内也可修改
+      - ADMIN_TOKEN={{ stable_secret "freebie_radar_admin" }}
+      # 管理 API 只在这些 Host 接受凭据：应用域名 + 平台内部域名
+      - ADMIN_HOSTS={{.S.AppDomain}},radar.lzcapp,radar
+      # 网关反代保留 Host/Origin，无需 TRUST_PROXY
+      - TRUST_PROXY=false
+      # 采集节流：微服盒子上放宽源间隔，避免触发上游站点风控
+      - MIN_REQUEST_GAP_MS=2000
+      - SOURCE_GAP_MS=3000
+    binds:
+      # SQLite 数据库、会话、设置、抓取去重缓存
+      - /lzcapp/var/data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:8788/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+usage: |
+  资源雷达（Resource Radar）是一款轻量、开箱即用的多兴趣社区信息聚合与精准推送工作台。
+
+  它从 GitHub、Reddit、软件限免站、开发者社区、Telegram 频道及自定义 RSS 采集信息，
+  通过「规则初筛与统一屏蔽 → AI 语义定级与分流 → 分频道目录呈现 → 多路由精准推送」
+  把每条内容送到它该去的位置：真福利精选、黑五 VPS 好价、开源项目、科技资讯等。
+
+  【首次使用】
+  1. 打开应用即可浏览公开资源流；管理区（推送 / AI / 屏蔽词 / 数据源运维）需要管理密码，
+     默认密码可 SSH 到盒子执行「lzc-cli app status community.lazycat.app.freebie-radar」
+     类工具查看应用环境变量 ADMIN_TOKEN 获得（也建议随后在管理区修改）。
+  2. 在管理区配置 Telegram Bot Token 与 Chat ID 后开启多路由推送。
+  3. 可选配置 AI 模型（AI_BASE_URL / AI_API_KEY / AI_MODEL）启用语义定级。
+  4. 数据源启停与采集周期全部在网页管理区实时热修改。
+
+  【说明】
+  - 上游 MIT 开源：https://github.com/ZiChuanLan/freebie-radar
+  - 数据（SQLite 数据库、会话、配置）持久化在应用数据目录 /lzcapp/var/data。
+  - 登录 linux.do / GitHub OAuth 等可选功能需自行申请对应 Client ID 填入环境变量。
+  - 本应用由上游源码构建打包，跟随上游 releases 打 tag 自动更新。
